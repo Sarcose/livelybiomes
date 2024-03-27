@@ -1,0 +1,10 @@
+TODO: Learn to add a new item
+TODO: Learn to make that item spawn a creature
+TODO: Item chooses a creature from a pool of possible creatures based on region spawned in
+TODO: Add item to inventories at great rarity
+TODO: Card deck item - holds up to X cards, is a container with all cards and these autocollect to decrease clutter
+TODO: Devise a card trading meta that can take place with legendaries
+TODO: Decide if card game is going to be like FFVIII where it has its own microgame, or like Lost Kingdom where it's used to manifest creatures in world.
+TODO: New game mode: CCG Mode - increased card spawns, NPCs are more focused on the CCG, cards "respawn" in inventory after use, instead of getting consumed
+            ---as well as a draw mode for cards, and a hand to draw when you enter the live map
+TODO: Come up with a name for the card game
