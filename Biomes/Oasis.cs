@@ -26,6 +26,7 @@ namespace Sarcose_Biomes {
 			{
 				return 0;
 			}
+            //'JoppaWorld.4.22.1.0.10'
             string[] array = ZoneID.Split('.');
 			int num = Convert.ToInt32(array[1]);
 			int num2 = Convert.ToInt32(array[2]);
@@ -48,10 +49,11 @@ namespace Sarcose_Biomes {
             if (BiomeLevels == null)
             {
                 BiomeLevels = new byte[num6, num7, num8];
-                LayeredNoise layeredNoise = LayeredNoise.CreateLinearOctiveLayers(3, 1.33f, 0.12f, XRLCore.Core.Game.GetWorldSeed("RustyNoise").ToString());
-                float num12 = 0.66f;
+                LayeredNoise layeredNoise = LayeredNoise.CreateLinearOctiveLayers(3, 1.33f, 0.12f, XRLCore.Core.Game.GetWorldSeed("OasisNoise").ToString());    //here the label provided is only a label for consistency.
+                float num12 = 0.54f;    //this is a density threshold. Fungal uses 0.72f. Other biomes use 0.66f. For Oasis we want it to be sparse, so we're using 0.54f
                 float num13 = 0f;
                 float num14 = 1f;
+                int num16 = 4;          // Biome levels. This controls how fine the detail is in the biome, increasing or decreasing the variations between generations. Most use 4.
                 float[,,] array2 = layeredNoise.Generate3D(num6, num7, num8);
                 for (int i = 0; i < num8; i++)
                 {
@@ -78,7 +80,6 @@ namespace Sarcose_Biomes {
                     {
                         for (int n = 0; n < num6; n++)
                         {
-                            int num16 = 4;
                             int num17 = (int)((array2[n, m, l] - num14) / ((num13 - num14) / (float)num16));
                             if (num17 < 0)
                             {
@@ -96,66 +97,69 @@ namespace Sarcose_Biomes {
             return BiomeLevels[num9, num10, num11];
         }
 
+        //NOTE ABOUT GETBIOMEVALUE:
+        /*
+        MutateZone and MutateZoneName determine the actual Biome applied and whether a Biome is applied at all. biomeValue 1, 2, 3 are used for everything. 3 is the rarest.
+
+        In other words: 
+        biomeValue >= 0 everywhere, probably literally every single parasang
+        biomeValue >= 1 common, honestly too common for my taste
+        biomeValue >= 2 uncommon
+        biomeValue >= 3 rare
+        rhetorically, let's bump that up to:
+        biomeValue == 1 uncommon
+        biomeValue == 2 very uncommon
+        biomeValue == 3 very rare
+        
+        extrapolating:
+
+            for a rare biome we want the MutateZone to only act on 2 or 3 or higher, and MutateZoneName to only provide adjective/name 2 or 3 for instance. For the Oasis, we will use 3 only.
+
+        */
+
         public override void MutateZone(Zone Z)
-        {   //this is definitely the bulk of the work here. We have builders being added etc
+        { 
             int biomeValue = GetBiomeValue(Z.ZoneID);
             //FungalJungle.FungalUpAZone is a function that Fungal uses specifically to populate a zone, probably heavily.
             if (Z.GetZoneProperty("relaxedbiomes") != "true")   //this check seems to be in every one. relaxedbiomes seems to remove builders, perhaps making it less intense
             {   //variety and extra builder evaluation
-                if (biomeValue == 1)
-                {
-                    //add zone builders to change the terrain
-                    //add extra oasis stuff
-                    //new PopTableZoneBuilder().BuildZone(Z, "Slimy1");
-                }
-                if (biomeValue == 2)
-                {
-                    //new PopTableZoneBuilder().BuildZone(Z, "Slimy2");
-                }
-                if (biomeValue == 3)
+                //here we are choosing different populations.
+                if (biomeValue == 2)        //oasis rarity
                 {
                     //new PopTableZoneBuilder().BuildZone(Z, "Slimy3");
+                    //add a population table to it
+                    //decentish chests
+                }
+                if (biomeValue == 3)        //oasis rarity
+                {
+                    //new PopTableZoneBuilder().BuildZone(Z, "Slimy3");
+                    //add a population table to it
+                    //probably add freshwater to this one specifically
+                    //rare chests
                 }
             }
-            if (biomeValue >= 1) //some kind of sound evaluation.
+            if (biomeValue >= 2) //for every oasis, probably liquidpools
             {
-                //Z.SetZoneProperty("ambient_bed_2", "Sounds/Ambiences/amb_biome_slimy");
+                //new LiquidPools().BuildZone(Z, "SlimePuddle", 3 * GetBiomeValue(Z.ZoneID) - 4, "0", "Slimy Plants");
+                //palm trees
+                //saltwater pools, brackish pools
+                //many wild animals, probably grazing hedonists chillin here. Mechanmimists stopping over.
             }
-
-            //actual oasis stuff:
-            //add 1-2 saltwater pools
-            //add 1-2 brackish pools
-            //add 1 pool of freshwater with a small amount of water/tiles
-            //add palm trees. Probably not angry palms. Cactus? Flowers? Coconuts?
-            //high chance for dromad traders maybe?
-
-
-            //add liquid pools if applicable
-            new LiquidPools().BuildZone(Z, "SlimePuddle", 3 * GetBiomeValue(Z.ZoneID) - 4, "0", "Slimy Plants");
-
-            //mutate zone inhabitants. For instance, psychic, rusty, etc
-            //see the respective biomes for examples. It spawns GameObjects manually if needed
-
-
-
-
         }
 
         public override string MutateZoneName(string Name, string ZoneID, int NameOrder)
         {
-            return IBiome.MutateZoneNameWith(Name, GetBiomeValue(ZoneID), "oasis", "hidden", "secret pool", "sequestered", "oasis", null);
+            return IBiome.MutateZoneNameWith(Name, GetBiomeValue(ZoneID), null, null, null, "hidden", "oasis", "refreshing");
         }
 
         public override GameObject MutateGameObject(GameObject Object, string ZoneID)
         {
-         //   sPrintc("MutateGameObject run");
-            //use templates to mutate objects.
-            return Object;  //do not mutate for now
+            return Object;  //I don't think oasis should have mutated creatures tbh
         }
 
         public override bool IsNotable(string ZoneID)  
         { 
-            if (GetBiomeValue(ZoneID) > 0){return true;}
+            if (GetBiomeValue(ZoneID) >= 3){return true;}
             return false;    
         }
 
