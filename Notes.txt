@@ -1,0 +1,20 @@
+valid terrain names:
+Saltdunes
+Saltmarsh
+Jungle
+Hills
+Mountains
+Flowerfields
+DesertCanyon
+Ruins
+LakeHinnom
+PalladiumReef
+Water
+DeepJungle
+BaroqueRuins
+MoonStair
+BananaGrove
+TheSpindle
+Brightsheol
+Tzimtzlum
+Fungal
